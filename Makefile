@@ -21,4 +21,4 @@ subscribe:
 
 publish:
 	@make build-pub
-	@./bin/publisher -topic=$(PUB_TOPIC) -qos=$(SUB_QOS)
+	@./bin/publisher -topic=$(PUB_TOPIC) -qos=$(PUB_QOS)

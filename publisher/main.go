@@ -7,15 +7,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 func main() {
-	// mqtt.DEBUG = log.New(os.Stdout, "", 0)
-	// mqtt.ERROR = log.New(os.Stdout, "", 0)
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+
 	stdin := bufio.NewReader(os.Stdin)
 	hostname, _ := os.Hostname()
 
@@ -37,6 +40,29 @@ func main() {
 	}
 	tlsConfig := &tls.Config{InsecureSkipVerify: true, ClientAuth: tls.NoClientCert}
 	connOpts.SetTLSConfig(tlsConfig)
+	connOpts.SetPingTimeout(10 * time.Second)
+	connOpts.SetKeepAlive(10 * time.Second)
+	connOpts.SetAutoReconnect(true)
+	connOpts.SetMaxReconnectInterval(10 * time.Second)
+
+	connOpts.SetConnectionLostHandler(func(c mqtt.Client, err error) {
+		fmt.Printf("!!!!!! mqtt connection lost error: %s\n" + err.Error())
+	})
+
+	connOpts.SetReconnectingHandler(func(c mqtt.Client, options *mqtt.ClientOptions) {
+		fmt.Println("...... mqtt reconnecting ......")
+	})
+
+	connOpts.OnConnect = func(client mqtt.Client) {
+		fmt.Println("...... connect success ......")
+		for {
+			message, err := stdin.ReadString('\n')
+			if err == io.EOF {
+				os.Exit(0)
+			}
+			client.Publish(*topic, byte(*qos), *retained, message)
+		}
+	}
 
 	client := mqtt.NewClient(connOpts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
@@ -45,11 +71,7 @@ func main() {
 	}
 	fmt.Printf("Connected to %s\n", *server)
 
-	for {
-		message, err := stdin.ReadString('\n')
-		if err == io.EOF {
-			os.Exit(0)
-		}
-		client.Publish(*topic, byte(*qos), *retained, message)
-	}
+	<-signals
+
+	client.Disconnect(10)
 }
