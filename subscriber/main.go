@@ -1,14 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/erry-azh/mqtt-on-go/config"
 )
 
 func main() {
@@ -16,19 +17,35 @@ func main() {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 	hostname, _ := os.Hostname()
+	server := flag.String("server", "tcp://127.0.0.1:1883", "The full URL of the mqtt server to connect to")
+	topic := flag.String("topic", "", "Topic to publish the messages on")
+	qos := flag.Int("qos", 0, "The QoS to send the messages at")
+	flag.Parse()
 
-	mqttHost, err := config.GetMQTTHost()
-	if err != nil {
-		log.Panic(err)
-		return
-	}
+	log.Println("connecting: ", *server)
 
-	log.Println("connecting: ", mqttHost)
-
-	opts := mqtt.NewClientOptions().AddBroker(mqttHost)
+	opts := mqtt.NewClientOptions().AddBroker(*server)
 	opts.SetClientID(hostname)
 	opts.SetCleanSession(true)
-	opts.OnConnect = registerSubs
+	opts.SetPingTimeout(10 * time.Second)
+	opts.SetKeepAlive(10 * time.Second)
+	opts.SetAutoReconnect(true)
+	opts.SetMaxReconnectInterval(10 * time.Second)
+
+	opts.SetConnectionLostHandler(func(c mqtt.Client, err error) {
+		fmt.Printf("!!!!!! mqtt connection lost error: %s\n" + err.Error())
+	})
+
+	opts.SetReconnectingHandler(func(c mqtt.Client, options *mqtt.ClientOptions) {
+		fmt.Println("...... mqtt reconnecting ......")
+	})
+
+	opts.OnConnect = func(c mqtt.Client) {
+		log.Printf("subscribing %s at qos-%d\n", *topic, *qos)
+		if token := c.Subscribe(*topic, byte(*qos), sampleSubs); token.Wait() && token.Error() != nil {
+			log.Print(token.Error())
+		}
+	}
 
 	client := mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
@@ -36,16 +53,12 @@ func main() {
 		return
 	}
 
-	log.Println("connect success: ", mqttHost)
+	log.Println("connect success: ", *server)
 
 	<-signals
-}
 
-func registerSubs(c mqtt.Client) {
-	log.Println("subscribing mqtt-go/test at qos-2")
-	if token := c.Subscribe("mqtt-go/test", byte(2), sampleSubs); token.Wait() && token.Error() != nil {
-		log.Print(token.Error())
-	}
+	client.Disconnect(5)
+	client.Unsubscribe("mqtt-go/test")
 }
 
 func sampleSubs(_ mqtt.Client, msg mqtt.Message) {

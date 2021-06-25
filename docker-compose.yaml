@@ -1,7 +1,14 @@
 version: "3.2"
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.48.0.0/24
 services:
   vmq-main:
-    container_name: test-vmq-main
+    container_name: vmq-main
     image: vernemq/vernemq
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
@@ -9,15 +16,15 @@ services:
     ports:
       - "1883:1883"
       - "8888:8888"
+      - "8080:8080"
+    networks:
+      default:
+        ipv4_address: 172.48.0.2
   vmq:
-    container_name: test-vmq-node
     image: vernemq/vernemq
     depends_on:
       - vmq-main
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
       - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
-      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.18.0.2"
-    deploy:
-      mode: replicated
-      replicas: 2
+      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.2"
