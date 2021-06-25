@@ -1,0 +1,23 @@
+version: "3.2"
+services:
+  vmq-main:
+    container_name: test-vmq-main
+    image: vernemq/vernemq
+    environment:
+      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
+      - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
+    ports:
+      - "1883:1883"
+      - "8888:8888"
+  vmq:
+    container_name: test-vmq-node
+    image: vernemq/vernemq
+    depends_on:
+      - vmq-main
+    environment:
+      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
+      - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
+      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.18.0.2"
+    deploy:
+      mode: replicated
+      replicas: 2
