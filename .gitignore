@@ -1,1 +1,4 @@
 .idea
+vendor
+publisher/main
+subscriber/main
