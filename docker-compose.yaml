@@ -7,6 +7,21 @@ networks:
       config:
         - subnet: 172.48.0.0/24
 services:
+  haproxy:
+    image: haproxy:alpine
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    container_name: haproxy
+    restart: always
+    ports:
+      - "1883:1883"
+      - "8088:8088"
+    volumes:
+      - .dockerfiles/haproxy-conf:/usr/local/etc/haproxy
+    networks:
+      - default
   vmq-main:
     container_name: vmq-main
     image: vernemq/vernemq
@@ -18,12 +33,11 @@ services:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
       - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
     ports:
-      - "1883:1883"
       - "8888:8888"
       - "8080:8080"
     networks:
       default:
-        ipv4_address: 172.48.0.2
+        ipv4_address: 172.48.0.3
   vmq:
     image: vernemq/vernemq
     ulimits:
@@ -32,7 +46,8 @@ services:
         hard: 65536
     depends_on:
       - vmq-main
+      - haproxy
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
       - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
-      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.2"
+      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.3"
