@@ -10,6 +10,10 @@ services:
   vmq-main:
     container_name: vmq-main
     image: vernemq/vernemq
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
       - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
@@ -22,6 +26,10 @@ services:
         ipv4_address: 172.48.0.2
   vmq:
     image: vernemq/vernemq
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     depends_on:
       - vmq-main
     environment:
