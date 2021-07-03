@@ -31,10 +31,10 @@ type authOnRegisterReq struct {
 }
 
 type authOnSubscribeReq struct {
-	ClientID   string   `json:"client_id"`
-	Mountpoint string   `json:"mountpoint"`
-	Username   string   `json:"username"`
-	Topics     *[]topic `json:"topics"`
+	ClientID   string  `json:"client_id"`
+	Mountpoint string  `json:"mountpoint"`
+	Username   string  `json:"username"`
+	Topics     []topic `json:"topics"`
 }
 
 type authOnPublishReq struct {
@@ -50,7 +50,7 @@ type authOnPublishReq struct {
 type response struct {
 	Result    interface{} `json:"result"`
 	Modifiers interface{} `json:"modifiers,omitempty"`
-	Topics    *[]topic    `json:"topics,omitempty"`
+	Topics    []topic     `json:"topics,omitempty"`
 }
 
 type authOnRegisterModifier struct {
@@ -103,7 +103,7 @@ func authOnSubscribe(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("auth_on_subscribe: %+v", req)
 	if req.Topics != nil {
-		log.Printf("auth_on_subscribe: topic %+v", *req.Topics)
+		log.Printf("auth_on_subscribe: topic %+v", req.Topics)
 	}
 	success(w)
 }
