@@ -1,9 +1,14 @@
 .PHONY: run
 run:
+	@make build-webhook
 	@docker-compose -f docker-compose.yaml up --scale vmq=$(VMQ_REPLICA)
 
 stop:
 	@docker-compose -f docker-compose.yaml down --remove-orphans
+
+.PHONY: build-webhook
+build-webhook:
+	@go build -o bin/webhook webhook/*.go
 
 build-sub:
 	@go build -o bin/subscriber subscriber/*.go
@@ -21,4 +26,4 @@ subscribe:
 
 publish:
 	@make build-pub
-	@./bin/publisher -topic=$(PUB_TOPIC) -qos=$(PUB_QOS)
+	@./bin/publisher -topic=$(PUB_TOPIC) -qos=$(PUB_QOS) -retained=$(PUB_RETAINED)

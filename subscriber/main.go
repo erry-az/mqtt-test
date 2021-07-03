@@ -69,4 +69,5 @@ func sampleSubs(_ mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("TOPIC: %s\n", msg.Topic())
 	fmt.Printf("MSG: %s\n", msg.Payload())
 	fmt.Printf("FULL_MSG: %+v\n", msg)
+	fmt.Println("---------------------------------")
 }

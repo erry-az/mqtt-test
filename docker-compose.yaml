@@ -20,8 +20,18 @@ services:
       - "8088:8088"
     volumes:
       - .dockerfiles/haproxy-conf:/usr/local/etc/haproxy
+  mqtt-webhooks:
+    image: mqtt-webhooks
+    build:
+      context: .
+      dockerfile: .dockerfiles/webhooks.dockerfile
+    volumes:
+      - ".:/go/src/github.com/erry-azh/mqtt-on-go"
+    ports:
+      - "8090:8090"
     networks:
-      - default
+      default:
+        ipv4_address: 172.48.0.10
   vmq-main:
     container_name: vmq-main
     image: vernemq/vernemq
@@ -31,7 +41,15 @@ services:
         hard: 65536
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
-      - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS=on"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_PASSWD=off"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL=off"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__HOOK=auth_on_register"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__ENDPOINT=http://172.48.0.10:8090/auth_on_register"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__HOOK=auth_on_subscribe"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__ENDPOINT=http://172.48.0.10:8090/auth_on_subscribe"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__HOOK=auth_on_publish"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__ENDPOINT=http://172.48.0.10:8090/auth_on_publish"
     ports:
       - "8888:8888"
       - "8080:8080"
@@ -47,7 +65,16 @@ services:
     depends_on:
       - vmq-main
       - haproxy
+      - mqtt-webhooks
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
-      - "DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS=on"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_PASSWD=off"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL=off"
       - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.3"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__HOOK=auth_on_register"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__ENDPOINT=http://172.48.0.10:8090/auth_on_register"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__HOOK=auth_on_subscribe"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__ENDPOINT=http://172.48.0.10:8090/auth_on_subscribe"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__HOOK=auth_on_publish"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__ENDPOINT=http://172.48.0.10:8090/auth_on_publish"
