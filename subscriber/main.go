@@ -26,7 +26,7 @@ func main() {
 
 	opts := mqtt.NewClientOptions().AddBroker(*server)
 	opts.SetClientID(hostname)
-	opts.SetCleanSession(true)
+	opts.SetCleanSession(false)
 	opts.SetPingTimeout(10 * time.Second)
 	opts.SetKeepAlive(10 * time.Second)
 	opts.SetAutoReconnect(true)

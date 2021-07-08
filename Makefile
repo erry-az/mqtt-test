@@ -1,7 +1,7 @@
 .PHONY: run
 run:
 	@make build-webhook
-	@docker-compose -f docker-compose.yaml up --scale vmq=$(VMQ_REPLICA)
+	@docker-compose -f docker-compose.yaml up --scale vmq=3
 
 stop:
 	@docker-compose -f docker-compose.yaml down --remove-orphans
