@@ -1,0 +1,146 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: #fff7ee;
+}
+
+#header {
+  background: #fff;
+  box-shadow: 0 0.25em 0.75em #ccc;
+  padding: 0.5em;
+  padding-left: 1em;
+}
+
+#container {
+  padding: 0.5em;
+  min-height: 0;
+  margin-top: 0.5em;
+}
+
+#chatbox {
+  background: #fff;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+  overflow: auto;
+}
+
+#control {
+  height: 4.5em;
+  width: 100%;
+  margin: 0;
+  margin-top: 0.5em;
+  padding: 0;
+}
+
+.setting-wrapper {
+  padding-left: 0;
+}
+
+.send-wrapper {
+  padding-right: 0;
+}
+
+textarea,
+.control-btn {
+  width: 100%;
+  height: 100%;
+}
+
+textarea {
+  border: 1px solid #ccc;
+}
+
+textarea:focus {
+  border: 1.5px solid #ccc;
+}
+
+#chat-container {
+  padding: 0;
+}
+
+#setting {
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-bottom-left-radius: 0.5em;
+  color: rgba(0, 0, 0, 0.75);
+  background: rgb(128, 192, 255);
+  background: linear-gradient(
+    180deg,
+    rgba(128, 192, 255, 1) 0%,
+    rgba(49, 152, 255, 1) 68%
+  );
+  color: #fff;
+}
+
+#setting:hover {
+  background: #fff;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+#send {
+  background: #fff;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-bottom-right-radius: 0.5em;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+#send:hover {
+  background: rgb(128, 192, 255);
+  background: linear-gradient(
+    180deg,
+    rgba(128, 192, 255, 1) 0%,
+    rgba(49, 152, 255, 1) 68%
+  );
+  color: #fff;
+}
+
+#send:disabled {
+  background: #aaa;
+  color: #fff;
+}
+
+.shortcutkey {
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-top: 0.25em;
+  color: #a1c3e6;
+}
+
+.sender-id {
+  color: blue;
+  font-weight: bold;
+}
+
+.receive-id {
+  color: red;
+  font-weight: bold;
+}
+
+.info-id {
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: bold;
+}
+
+.hidden-input {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.config-close {
+  display: none;
+}
+
+#logo {
+  max-width: 10em;
+  margin-right: 5em;
+}
+
+#tagline {
+  max-width: 10em;
+}

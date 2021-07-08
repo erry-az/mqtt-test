@@ -1,7 +1,5 @@
 # mqtt-on-go
 
-
----
 ## Info
 - more info about MQTT https://mqtt.org/
 - VerneMQ is MQTT message broker that will be use for this test https://vernemq.com/
@@ -9,7 +7,7 @@
 - change ulimit with this instruction https://docs.vernemq.com/guides/change-open-file-limits
 - use this tools if you want to benchmark connection and message
 https://github.com/krylovsk/mqtt-benchmark
----
+
 ## Commands
 
 - ### Run VerneMQ
@@ -35,3 +33,7 @@ use this command to create publisher with defined topic and qos
 make subscribe SUB_TOPIC=<topic_name> SUB_QOS=<topic_qos>
 ``` 
 use this command to create subscriber with defined topic and qos
+
+## Web client
+you can use web client on this repo on `mqtt_web_client` folder, but you must use websocket over mqtt port
+(created by : matias alvin) 
