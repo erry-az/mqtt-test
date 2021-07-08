@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -27,10 +26,6 @@ func main() {
 	opts := mqtt.NewClientOptions().AddBroker(*server)
 	opts.SetClientID(hostname)
 	opts.SetCleanSession(false)
-	opts.SetPingTimeout(10 * time.Second)
-	opts.SetKeepAlive(10 * time.Second)
-	opts.SetAutoReconnect(true)
-	opts.SetMaxReconnectInterval(10 * time.Second)
 
 	opts.SetConnectionLostHandler(func(c mqtt.Client, err error) {
 		fmt.Printf("!!!!!! mqtt connection lost error: %s\n" + err.Error())
@@ -40,17 +35,15 @@ func main() {
 		fmt.Println("...... mqtt reconnecting ......")
 	})
 
-	opts.OnConnect = func(c mqtt.Client) {
-		log.Printf("subscribing %s at qos-%d\n", *topic, *qos)
-		if token := c.Subscribe(*topic, byte(*qos), sampleSubs); token.Wait() && token.Error() != nil {
-			log.Print(token.Error())
-		}
-	}
-
 	client := mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		log.Panic(token.Error())
 		return
+	}
+
+	log.Printf("subscribing %s at qos-%d\n", *topic, *qos)
+	if token := client.Subscribe(*topic, byte(*qos), sampleSubs); token.Wait() && token.Error() != nil {
+		log.Print(token.Error())
 	}
 
 	log.Println("connect success: ", *server)
