@@ -1,6 +1,5 @@
 .PHONY: run
 run:
-	@make build-webhook
 	@docker-compose -f docker-compose.yaml up --scale vmq=3
 
 stop:
