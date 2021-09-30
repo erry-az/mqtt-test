@@ -24,13 +24,13 @@ use this command for stop docker compose
 
 - ### Publisher
 ```
-make publish PUB_TOPIC=<topic_name> PUB_QOS=<topic_qos>
+make publish ARG='-server=0.0.0.0:1883 -topic=abc/www -qos=1/2/3 -retained=true/false -id=str -username=str -password=str'
 ``` 
 use this command to create publisher with defined topic and qos
 
-- ### Consumer
+- ### Subscribe
 ```
-make subscribe SUB_TOPIC=<topic_name> SUB_QOS=<topic_qos>
+make subscribe ARG='-server=0.0.0.0:1883 -topic=abc/www -qos=1/2/3 -id=str -clean=true/false'
 ``` 
 use this command to create subscriber with defined topic and qos
 
