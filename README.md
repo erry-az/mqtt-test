@@ -36,4 +36,4 @@ use this command to create subscriber with defined topic and qos
 
 ## Web client
 you can use web client on this repo on `mqtt_web_client` folder, but you must use websocket over mqtt port
-(created by : matias alvin) 
+(created by : matias alvin @alvinmatias69) 
