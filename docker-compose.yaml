@@ -34,19 +34,18 @@ services:
         ipv4_address: 172.48.0.10
   vmq-main:
     container_name: vmq-main
-    image: vernemq/vernemq
+    image: vernemq/vernemq:1.12.3
     ulimits:
       nofile:
         soft: 65536
         hard: 65536
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
-      - "DOCKER_VERNEMQ_MAX_ONLINE_MESSAGES=100000"
-      - "DOCKER_VERNEMQ_MAX_OFFLINE_MESSAGES=100000"
-      - "DOCKER_VERNEMQ_PERSISTENT_CLIENT_EXPIRATION=1h"
-      - "DOCKER_VERNEMQ_MAX_MESSAGE_RATE=0"
-      - "DOCKER_VERNEMQ_MAX_DRAIN_TIME=30"
-      - "DOCKER_VERNEMQ_MAX_MSGS_PER_DRAIN_STEP=5000"
+      - "DOCKER_VERNEMQ_NODENAME=172.48.0.3"
+#      - "DOCKER_VERNEMQ_METADATA_PLUGIN=vmq_plumtree"
+#      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM=9100"
+#      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MAXIMUM=9109"
+      - "DOCKER_VERNEMQ_LISTENER__VMQ__CLUSTERING=172.48.0.3:44053"
       - "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS=on"
       - "DOCKER_VERNEMQ_PLUGINS__VMQ_PASSWD=off"
       - "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL=off"
@@ -62,8 +61,9 @@ services:
     networks:
       default:
         ipv4_address: 172.48.0.3
-  vmq:
-    image: vernemq/vernemq
+  vmq-0:
+    container_name: vmq-0
+    image: vernemq/vernemq:1.12.3
     ulimits:
       nofile:
         soft: 65536
@@ -74,18 +74,52 @@ services:
       - mqtt-webhooks
     environment:
       - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
-      - "DOCKER_VERNEMQ_MAX_ONLINE_MESSAGES=100000"
-      - "DOCKER_VERNEMQ_MAX_OFFLINE_MESSAGES=100000"
-      - "DOCKER_VERNEMQ_MAX_MESSAGE_RATE=0"
-      - "DOCKER_VERNEMQ_MAX_DRAIN_TIME=30"
-      - "DOCKER_VERNEMQ_MAX_MSGS_PER_DRAIN_STEP=5000"
+      - "DOCKER_VERNEMQ_NODENAME=172.48.0.4"
+#      - "DOCKER_VERNEMQ_METADATA_PLUGIN=vmq_plumtree"
+#      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM=9100"
+#      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MAXIMUM=9109"
+      - "DOCKER_VERNEMQ_LISTENER__VMQ__CLUSTERING=172.48.0.4:44053"
+      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.3"
       - "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS=on"
       - "DOCKER_VERNEMQ_PLUGINS__VMQ_PASSWD=off"
       - "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL=off"
-      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.3"
       - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__HOOK=auth_on_register"
       - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__ENDPOINT=http://172.48.0.10:8090/auth_on_register"
       - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__HOOK=auth_on_subscribe"
       - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__ENDPOINT=http://172.48.0.10:8090/auth_on_subscribe"
       - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__HOOK=auth_on_publish"
       - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__ENDPOINT=http://172.48.0.10:8090/auth_on_publish"
+    networks:
+      default:
+        ipv4_address: 172.48.0.4
+  vmq-1:
+    container_name: vmq-1
+    image: vernemq/vernemq:1.12.3
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    depends_on:
+      - vmq-main
+      - haproxy
+      - mqtt-webhooks
+    environment:
+      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
+      - "DOCKER_VERNEMQ_NODENAME=172.48.0.5"
+#      - "DOCKER_VERNEMQ_METADATA_PLUGIN=vmq_plumtree"
+#      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM=9100"
+#      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MAXIMUM=9109"
+      - "DOCKER_VERNEMQ_DISCOVERY_NODE=172.48.0.3"
+      - "DOCKER_VERNEMQ_LISTENER__VMQ__CLUSTERING=172.48.0.5:44053"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS=on"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_PASSWD=off"
+      - "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL=off"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__HOOK=auth_on_register"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONREGISTER__ENDPOINT=http://172.48.0.10:8090/auth_on_register"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__HOOK=auth_on_subscribe"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONSUBSCRIBE__ENDPOINT=http://172.48.0.10:8090/auth_on_subscribe"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__HOOK=auth_on_publish"
+      - "DOCKER_VERNEMQ_VMQ_WEBHOOKS__AUTHONPUBLISH__ENDPOINT=http://172.48.0.10:8090/auth_on_publish"
+    networks:
+      default:
+        ipv4_address: 172.48.0.5

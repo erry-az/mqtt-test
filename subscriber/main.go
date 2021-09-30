@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,18 +18,22 @@ func main() {
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 	hostname, _ := os.Hostname()
+	hostname += "|" + RandStringBytes(12)
 	server := flag.String("server", "tcp://127.0.0.1:1883", "The full URL of the mqtt server to connect to")
 	topic := flag.String("topic", "", "Topic to publish the messages on")
 	qos := flag.Int("qos", 0, "The QoS to send the messages at")
-	flag.Parse()
+	clientID := flag.String("id", hostname, "A clientID for the connection")
+	cleanSession := flag.Bool("clean", true, "clean session for connection")
 
+	flag.Parse()
+	log.Println("clientID: ", *clientID)
 	log.Println("connecting: ", *server)
 
 	opts := mqtt.NewClientOptions().AddBroker(*server)
-	opts.SetClientID(hostname)
-	opts.SetCleanSession(false)
-	opts.SetPingTimeout(10 * time.Second)
-	opts.SetKeepAlive(10 * time.Second)
+	opts.SetClientID(*clientID)
+	opts.SetCleanSession(*cleanSession)
+	opts.SetPingTimeout(1 * time.Second)
+	opts.SetKeepAlive(60 * time.Second)
 	opts.SetAutoReconnect(true)
 	opts.SetMaxReconnectInterval(10 * time.Second)
 	opts.SetProtocolVersion(4)
@@ -60,6 +65,18 @@ func main() {
 
 	//client.Unsubscribe(*topic)
 	client.Disconnect(5)
+}
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringBytes(n int) string {
+	rand.Seed(time.Now().UnixNano())
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
 }
 
 func sampleSubs(_ mqtt.Client, msg mqtt.Message) {

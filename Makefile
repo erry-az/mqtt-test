@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	@docker-compose -f docker-compose.yaml up --scale vmq=3
+	@docker-compose -f docker-compose.yaml up
 
 stop:
 	@docker-compose -f docker-compose.yaml down --remove-orphans
@@ -21,8 +21,8 @@ build:
 
 subscribe:
 	@make build-sub
-	@./bin/subscriber -topic=$(SUB_TOPIC) -qos=$(SUB_QOS)
+	@./bin/subscriber $(ARG)
 
 publish:
 	@make build-pub
-	@./bin/publisher -topic=$(PUB_TOPIC) -qos=$(PUB_QOS) -retained=$(PUB_RETAINED)
+	@./bin/publisher $(ARG)

@@ -6,9 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
+	"math/rand"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -21,15 +22,18 @@ func main() {
 
 	stdin := bufio.NewReader(os.Stdin)
 	hostname, _ := os.Hostname()
+	hostname += "|" + RandStringBytes(12)
 
 	server := flag.String("server", "tcp://127.0.0.1:1883", "The full URL of the mqtt server to connect to")
 	topic := flag.String("topic", hostname, "Topic to publish the messages on")
 	qos := flag.Int("qos", 0, "The QoS to send the messages at")
 	retained := flag.Bool("retained", false, "Are the messages sent with the retained flag")
-	clientID := flag.String("client_id", hostname+strconv.Itoa(time.Now().Second()), "A clientID for the connection")
+	clientID := flag.String("id", hostname, "A clientID for the connection")
 	username := flag.String("username", "", "A username to authenticate to the mqtt server")
 	password := flag.String("password", "", "Password to match username")
 	flag.Parse()
+
+	log.Println("clientID: ", *clientID)
 
 	connOpts := mqtt.NewClientOptions().AddBroker(*server).SetClientID(*clientID).SetCleanSession(true)
 	if *username != "" {
@@ -74,4 +78,16 @@ func main() {
 	<-signals
 
 	client.Disconnect(10)
+}
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func RandStringBytes(n int) string {
+	rand.Seed(time.Now().UnixNano())
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
 }
