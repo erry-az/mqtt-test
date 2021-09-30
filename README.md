@@ -14,7 +14,7 @@ https://github.com/krylovsk/mqtt-benchmark
 ```
 make run
 ```
-use this command for run docker verneMQ (mqtt broker) 4 nodes
+use this command for run docker verneMQ (mqtt broker) 3 nodes.
 
 - ### Stop VerneMQ 
 ```

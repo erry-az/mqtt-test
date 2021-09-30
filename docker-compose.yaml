@@ -34,13 +34,13 @@ services:
         ipv4_address: 172.48.0.10
   vmq-main:
     container_name: vmq-main
-    image: vernemq/vernemq:1.12.3
+    image: vernemq/vernemq:1.9.2-1
     ulimits:
       nofile:
         soft: 65536
         hard: 65536
     environment:
-      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
+#      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes" for > 1.10
       - "DOCKER_VERNEMQ_NODENAME=172.48.0.3"
 #      - "DOCKER_VERNEMQ_METADATA_PLUGIN=vmq_plumtree"
 #      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM=9100"
@@ -63,7 +63,7 @@ services:
         ipv4_address: 172.48.0.3
   vmq-0:
     container_name: vmq-0
-    image: vernemq/vernemq:1.12.3
+    image: vernemq/vernemq:1.9.2-1
     ulimits:
       nofile:
         soft: 65536
@@ -73,7 +73,7 @@ services:
       - haproxy
       - mqtt-webhooks
     environment:
-      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
+#      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes" for > 1.10
       - "DOCKER_VERNEMQ_NODENAME=172.48.0.4"
 #      - "DOCKER_VERNEMQ_METADATA_PLUGIN=vmq_plumtree"
 #      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM=9100"
@@ -94,7 +94,7 @@ services:
         ipv4_address: 172.48.0.4
   vmq-1:
     container_name: vmq-1
-    image: vernemq/vernemq:1.12.3
+    image: vernemq/vernemq:1.9.2-1
     ulimits:
       nofile:
         soft: 65536
@@ -104,7 +104,7 @@ services:
       - haproxy
       - mqtt-webhooks
     environment:
-      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes"
+#      - "DOCKER_VERNEMQ_ACCEPT_EULA=yes" for > 1.10
       - "DOCKER_VERNEMQ_NODENAME=172.48.0.5"
 #      - "DOCKER_VERNEMQ_METADATA_PLUGIN=vmq_plumtree"
 #      - "DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM=9100"
