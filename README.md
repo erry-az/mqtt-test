@@ -18,9 +18,9 @@ use this command for run docker verneMQ (mqtt broker) 3 nodes.
 
 - ### Stop VerneMQ 
 ```
-make stop
+make clear
 ``` 
-use this command for stop docker compose
+use this command for clear container
 
 - ### Publisher
 ```

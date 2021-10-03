@@ -2,7 +2,7 @@
 run:
 	@docker-compose -f docker-compose.yaml up
 
-stop:
+clear:
 	@docker-compose -f docker-compose.yaml down --remove-orphans
 
 .PHONY: build-webhook
