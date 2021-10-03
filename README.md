@@ -16,7 +16,7 @@ make run
 ```
 use this command for run docker verneMQ (mqtt broker) 3 nodes.
 
-- ### Stop VerneMQ 
+- ### Clear Docker VerneMQ 
 ```
 make clear
 ``` 
