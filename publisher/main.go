@@ -48,6 +48,7 @@ func main() {
 	connOpts.SetKeepAlive(10 * time.Second)
 	connOpts.SetAutoReconnect(true)
 	connOpts.SetMaxReconnectInterval(10 * time.Second)
+	connOpts.SetWill("force-kill", *clientID, 1, false)
 
 	connOpts.SetConnectionLostHandler(func(c mqtt.Client, err error) {
 		fmt.Printf("!!!!!! mqtt connection lost error: %s\n" + err.Error())
